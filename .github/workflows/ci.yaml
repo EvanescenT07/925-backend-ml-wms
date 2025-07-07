@@ -1,9 +1,9 @@
-name: CI/CD Pipeline
+name: CI Pipeline
 
 on:
   push:
-  branches:
-    - main
+    branches:
+      - main
   pull_request:
     branches:
       - main
@@ -15,10 +15,9 @@ jobs:
     if: |
       contains(github.event.head_commit.message, '[ONNX]') ||
       (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[ONNX]'))
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -39,11 +38,12 @@ jobs:
   ultralytics-model:
     name: Ultralytics Model Service
     runs-on: ubuntu-latest
-    if: contains(github.event.head_commit.message, '[ULTRALYTICS]') ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[Ultralytics]'))
+    if: |
+      contains(github.event.head_commit.message, '[ULTRALYTICS]') ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[ULTRALYTICS]'))
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -61,28 +61,28 @@ jobs:
           cd backend-ml-system/.ultralytics-model
           pytest
 
-    video-stream:
-      name: Video Stream Service
-      runs-on: ubuntu-latest
-      if: |
-          contains(github.event.head_commit.message, '[VIDEO]') ||
-          (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[VIDEO]'))
+  video-stream:
+    name: Video Stream Service
+    runs-on: ubuntu-latest
+    if: |
+      contains(github.event.head_commit.message, '[VIDEO]') ||
+      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[VIDEO]'))
     steps:
-        - name: Checkout code
-          uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        - name: Set up Python
-          uses: actions/setup-python@v5
-          with:
-            python-version: "3.11"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-        - name: Install dependencies
-          run: |
-            cd backend-ml-system/.video-stream
-            python -m pip install --upgrade pip
-            pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          cd backend-ml-system/.video-stream
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-        - name: Run tests
-          run: |
-            cd backend-ml-system/.video-stream
-            pytest
+      - name: Run tests
+        run: |
+          cd backend-ml-system/.video-stream
+          pytest

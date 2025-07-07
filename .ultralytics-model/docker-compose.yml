@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  yolov11-ultralytics:
+    build: .
+    container_name: 925-backend
+    environment:
+      - MODEL_PATH=${MODEL_PATH}
+      - CAMERA_URL_1=${CAMAERA_URL_1}
+      - CAMERA_URL_2=${CAMAERA_URL_2}
+
+    ports:
+      - "8000:8000"
+    restart: unless-stopped

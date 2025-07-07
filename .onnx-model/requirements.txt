@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+opencv-python-headless
+onnxruntime
+# onnxruntime-gpu
+websockets
+python-dotenv
+pyyaml

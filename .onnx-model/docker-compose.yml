@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  yolov11-onnx:
+    build: .
+    container_name: yolov11-onnx
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_PATH=${MODEL_PATH}
+      - CAMERA_URL_1=${CAMERA_URL_1}
+      - CAMERA_URL_2=${CAMERA_URL_2}
+    volumes:
+      - .:/app
+    restart: unless-stopped

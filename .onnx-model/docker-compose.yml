@@ -1,8 +1,8 @@
 version: "3.8"
 services:
-  yolov11-onnx:
+  wms-ml-onnx:
     build: .
-    container_name: yolov11-onnx
+    container_name: wms-ml-onnx
     ports:
       - "8000:8000"
     environment:

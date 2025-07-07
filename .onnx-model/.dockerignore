@@ -1,0 +1,16 @@
+venv/
+____pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+.env
+venv/
+.idea/
+*.log
+.DS_Store
+*.mp4
+*.jpg
+*.jpeg
+*.png

@@ -3,5 +3,8 @@
 .model-train/runs/detect/AdamW_925_Capstone_V.0.0.1
 .model-train/yolov11.pt
 .model-train/yolo11n.pt
+.onnx-model/.env
+.ultralytics-model/.env
+.video-frame/.env
 venv/
 __pycache__/

@@ -2,9 +2,12 @@
 .model-train/runs/detect/Adam_925_Capstone_V.0.0.1
 .model-train/runs/detect/AdamW_925_Capstone_V.0.0.1
 .model-train/yolov11.pt
-.model-train/yolo11n.pt
 .onnx-model/.env
+.onnx-model/.pytest_cache/
 .ultralytics-model/.env
+.ultralytics-model/.pytest_cache/
 .video-frame/.env
+.video-frame/.pytest_cache/
+wms.log
 venv/
 __pycache__/

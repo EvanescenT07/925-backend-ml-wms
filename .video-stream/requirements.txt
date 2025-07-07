@@ -1,3 +1,5 @@
+pytest
+httpx
 fastapi
 uvicorn
 python-dotenv

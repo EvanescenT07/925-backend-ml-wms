@@ -142,7 +142,8 @@ def detection_object_data(frame):
         })
         count += 1
         logging.debug(f"Detected {label} at ({x1}, {y1}, {x2}, {y2}) with confidence {conf:.2f}")
-        return {
-            "total": count,
-            "detection": result
-        }
+    # Always return a result, even if empty
+    return {
+        "total": count,
+        "detection": result
+    }

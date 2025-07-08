@@ -15,7 +15,7 @@ RUN apt-get update && \
 
 # Copy requirements file
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Runtime Stage
 FROM python:3.11-slim-bookworm AS runtime

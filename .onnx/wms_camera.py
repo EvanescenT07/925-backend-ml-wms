@@ -12,10 +12,10 @@ class Camera:
     # Reloads the camera based on environment variables.
     # It checks for CAMERA_URL_1 and CAMERA_URL_2, and initializes the camera  
     def reload_camera(self):
-        if hasattr(self, 'video') and self.video.isOpen():
+        if hasattr(self, 'video') and self.video.isOpened():
             self.video.release()
-        cam_1 = os.getenv("CAMERA_URL_1", 0)
-        cam_2 = os.getenv("CAMERA_URL_2", 0)
+        cam_1 = os.getenv("CAMERA_URL_1")
+        cam_2 = os.getenv("CAMERA_URL_2")
         self.video = cv2.VideoCapture(cam_1)
         if not self.video.isOpened() and cam_2:
             self.video = cv2.VideoCapture(cam_2)

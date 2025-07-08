@@ -68,16 +68,17 @@ def nms(boxes, scores, iou_threshold):
 # Postprocess function to extract bounding boxes, scores, and class IDs from the model outputs
 def postprocess(outputs, orig_shape):
     boxes, scores, class_ids = [], [], []
-    output = outputs[0]  # (1, 5, 8400)
-    output = np.squeeze(output)  # (5, 8400)
-    output = output.T  # (8400, 5)
+    output = outputs[0]  # (1, 85, 8400)
+    output = np.squeeze(output)  # (85, 8400)
+    output = output.T  # (8400, 85)
     h0, w0 = orig_shape[:2]
     
     for det in output:
         conf = det[4]
         if conf >= THRESHOLD:
             x, y, w, h = det[0:4]
-            class_ids = int(det[5]) if len(det) > 5 else 0
+            class_scores = det[5:]  
+            class_id = int(np.argmax(class_scores)) 
             # Convert to xyxy and scale to original image
             x1 = int((x - w / 2) * w0 / 640)
             y1 = int((y - h / 2) * h0 / 640)
@@ -85,7 +86,7 @@ def postprocess(outputs, orig_shape):
             y2 = int((y + h / 2) * h0 / 640)
             boxes.append([x1, y1, x2, y2])
             scores.append(conf)
-            class_ids.append(class_ids)
+            class_ids.append(class_id)
     # NMS
     if len(boxes) == 0:
         return []
@@ -118,6 +119,11 @@ def detection_object(frame):
 
 # Function to detect objects in a frame and return the data in a structured format
 def detection_object_data(frame):
+    if frame is None:
+        return {
+            "total": 0,
+            "detections": []
+        }
     orig_shape = frame.shape
     img = preprocess(frame)
     ort_inputs = {
@@ -128,10 +134,10 @@ def detection_object_data(frame):
     result = []
     count = 0
     for x1, y1, x2, y2, conf, class_id in detection:
-        label = f"{CLASS_NAMES[class_id] if class_id < len(CLASS_NAMES) else str(class_id)} {conf:.2f}"
+        class_name = f"{CLASS_NAMES[class_id] if class_id < len(CLASS_NAMES) else str(class_id)}"
         result.append({
             "class_id": int(class_id),
-            "class": label,
+            "class": class_name,
             "confidence": float(conf),
             "box": {
                 "x1": int(x1),
@@ -141,9 +147,9 @@ def detection_object_data(frame):
             },
         })
         count += 1
-        logging.debug(f"Detected {label} at ({x1}, {y1}, {x2}, {y2}) with confidence {conf:.2f}")
+        logging.debug(f"Detected {class_name} at ({x1}, {y1}, {x2}, {y2}) with confidence {conf:.2f}")
     # Always return a result, even if empty
     return {
         "total": count,
-        "detection": result
+        "detections": result
     }

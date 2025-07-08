@@ -52,6 +52,15 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Debug - List directory structure
+        run: |
+          echo "Repository root:"
+          ls -la
+          echo "Backend-ml-system contents:"
+          ls -la backend-ml-system/
+          echo "Looking for ultralytics folder..."
+          find . -name "*ultralytics*" -type d
+
       - name: Install dependencies
         run: |
           cd backend-ml-system/.ultralytics

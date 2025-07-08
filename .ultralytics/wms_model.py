@@ -10,9 +10,16 @@ load_dotenv()
 THRESHOLD = 0.83
 model = YOLO(os.getenv("MODEL_PATH"))
 
+if not model:
+    logging.error("Model not loaded. Please check the MODEL_PATH environment variable.")
+
 # Function to perform object detection on a given frame
 def detection_object(frame):
-    result = model(frame)[0]
+    try:
+        result = model(frame)[0]
+    except Exception as e:
+        logging.exception("Model inference failed during object detection.")
+        return None
     annotated_frame = frame.copy()
     count = 0
     

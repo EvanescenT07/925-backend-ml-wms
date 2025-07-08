@@ -248,3 +248,35 @@ def test_full_pipeline_integration(mock_video_capture, mock_model):
     result = detection_object_data(frame)
     assert result["total"] == 1
     assert result["detections"][0]["class"] == "test_object"
+    
+# --- WebSocket endpoint test ---
+@patch('wms_main.Camera')
+@patch('wms_main.detection_object_data')
+def test_ws_detect_endpoint(mock_detection, mock_camera_class):
+    import asyncio
+    
+    # Mock camera
+    mock_camera = Mock()
+    dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
+    mock_camera.get_frame.return_value = dummy_frame
+    mock_camera_class.return_value = mock_camera
+    
+    # Mock detection response
+    mock_detection.return_value = {
+        "total": 1,
+        "detections": [{"class": "test_object", "confidence": 0.9}]
+    }
+    
+    client = TestClient(app)
+    
+    # Test WebSocket connection
+    with client.websocket_connect("/ws/detect") as websocket:
+        # The WebSocket should send detection data automatically
+        response = websocket.receive_json()
+        
+        assert isinstance(response, dict)
+        assert "total" in response
+        assert "detections" in response
+        assert response["total"] == 1
+        assert response["detections"][0]["class"] == "test_object"
+        assert response["detections"][0]["confidence"] == 0.9

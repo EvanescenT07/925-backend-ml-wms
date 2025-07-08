@@ -3,8 +3,8 @@ import cv2
 import numpy as np
 import os
 import yaml
-from dotenv import load_dotenv
 import logging
+from dotenv import load_dotenv
 
 load_dotenv()
 

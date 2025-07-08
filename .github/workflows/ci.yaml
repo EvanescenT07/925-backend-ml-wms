@@ -14,7 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       contains(github.event.head_commit.message, '[ONNX]') ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[ONNX]'))
+      contains(github.event.head_commit.message, '[ALL]') ||
+      (github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[ONNX]') || contains(github.event.pull_request.title, '[ALL]')))
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,13 +27,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd backend-ml-system/.onnx-model
+          cd .onnx
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run tests
         run: |
-          cd backend-ml-system/.onnx-model
+          cd .onnx
           pytest
 
   ultralytics-model:
@@ -40,7 +41,8 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       contains(github.event.head_commit.message, '[ULTRALYTICS]') ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[ULTRALYTICS]'))
+      contains(github.event.head_commit.message, '[ALL]') ||
+      (github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[ULTRALYTICS]') || contains(github.event.pull_request.title, '[ALL]')))
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -52,13 +54,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd backend-ml-system/.ultralytics-model
+          cd .ultralytics
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run tests
         run: |
-          cd backend-ml-system/.ultralytics-model
+          cd .ultralytics
           pytest
 
   video-stream:
@@ -66,7 +68,8 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       contains(github.event.head_commit.message, '[VIDEO]') ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[VIDEO]'))
+      contains(github.event.head_commit.message, '[ALL]') ||
+      (github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[VIDEO]') || contains(github.event.pull_request.title, '[ALL]')))
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -78,11 +81,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd backend-ml-system/.video-stream
+          cd .video_stream
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run tests
         run: |
-          cd backend-ml-system/.video-stream
+          cd .video_stream
           pytest

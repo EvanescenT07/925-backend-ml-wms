@@ -170,9 +170,6 @@ def test_generate_video_no_frames(mock_imencode, mock_camera_class):
 @patch('wms_model.session')
 def test_detection_object_data_with_detections(mock_session):
     """Test detection with mock ONNX output containing detections"""
-    # Create proper YOLO output shape: (1, 85, 8400)
-    # Format: [x, y, w, h, conf, class0_prob, class1_prob, ...]
-    
     detections = np.zeros((1, 85, 8400))
     
     # First detection (index 0) - high confidence person
@@ -181,9 +178,8 @@ def test_detection_object_data_with_detections(mock_session):
     detections[0, 2, 0] = 100  # w
     detections[0, 3, 0] = 150  # h
     detections[0, 4, 0] = 0.9  # confidence
-    detections[0, 5, 0] = 0.9  # person class probability
-    detections[0, 6, 0] = 0.1  # car class probability
-    # Rest are 0 (already initialized)
+    detections[0, 5, 0] = 0.9
+    detections[0, 6, 0] = 0.1
     
     # Second detection - also high confidence
     detections[0, 0, 1] = 100  # x
@@ -191,8 +187,8 @@ def test_detection_object_data_with_detections(mock_session):
     detections[0, 2, 1] = 80   # w
     detections[0, 3, 1] = 120  # h
     detections[0, 4, 1] = 0.85 # confidence
-    detections[0, 5, 1] = 0.1  # person class probability
-    detections[0, 6, 1] = 0.8  # car class probability
+    detections[0, 5, 1] = 0.1 
+    detections[0, 6, 1] = 0.8  
     
     # Rest of detections have low confidence (will be filtered out)
     for i in range(2, 8400):

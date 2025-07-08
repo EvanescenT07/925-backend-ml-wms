@@ -1,12 +1,24 @@
 import pytest
 import cv2
+import os
 import numpy as np
 from unittest.mock import Mock, patch
 from fastapi.testclient import TestClient
-from wms_camera import Camera
-from wms_model import detection_object, detection_object_data
-from wms_gen_video import GenerateVideo
-from wms_main import app
+
+# --- Set environment variable for tests BEFORE importing
+os.environ['MODEL_PATH'] = 'dummy_model.pt'
+
+# --- Mock YOLO class to prevent actual model loading
+with patch('ultralytics.YOLO') as mock_yolo_class:
+    mock_yolo_instance = Mock()
+    mock_yolo_instance.names = {0: "test_object"}
+    mock_yolo_class.return_value = mock_yolo_instance
+    
+    # import modules
+    from wms_camera import Camera
+    from wms_model import detection_object, detection_object_data
+    from wms_gen_video import GenerateVideo
+    from wms_main import app
 
 # --- Camera class tests ---
 def test_camera_init_and_release(monkeypatch):

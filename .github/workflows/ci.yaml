@@ -14,7 +14,8 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       contains(github.event.head_commit.message, '[ONNX]') ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[ONNX]'))
+      contains(github.event.head_commit.message, '[ALL]') ||
+      (github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[ONNX]') || contains(github.event.pull_request.title, '[ALL]')))
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -40,7 +41,8 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       contains(github.event.head_commit.message, '[ULTRALYTICS]') ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[ULTRALYTICS]'))
+      contains(github.event.head_commit.message, '[ALL]') ||
+      (github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[ULTRALYTICS]') || contains(github.event.pull_request.title, '[ALL]')))
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -66,7 +68,8 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       contains(github.event.head_commit.message, '[VIDEO]') ||
-      (github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[VIDEO]'))
+      contains(github.event.head_commit.message, '[ALL]') ||
+      (github.event_name == 'pull_request' && (contains(github.event.pull_request.title, '[VIDEO]') || contains(github.event.pull_request.title, '[ALL]')))
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

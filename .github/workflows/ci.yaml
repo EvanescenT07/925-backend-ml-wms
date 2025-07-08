@@ -27,13 +27,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd backend-ml-system/.onnx-model
+          cd backend-ml-system/.onnx
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run tests
         run: |
-          cd backend-ml-system/.onnx-model
+          cd backend-ml-system/.onnx
           pytest
 
   ultralytics-model:
@@ -54,13 +54,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd backend-ml-system/.ultralytics-model
+          cd backend-ml-system/.ultralytics
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run tests
         run: |
-          cd backend-ml-system/.ultralytics-model
+          cd backend-ml-system/.ultralytics
           pytest
 
   video-stream:
@@ -81,11 +81,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd backend-ml-system/.video-stream
+          cd backend-ml-system/.video_stream
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run tests
         run: |
-          cd backend-ml-system/.video-stream
+          cd backend-ml-system/.video_stream
           pytest

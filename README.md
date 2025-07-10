@@ -17,7 +17,7 @@ This project is a **Warehouse Management System (WMS)** for Capstone Project tha
 ### 1. **Clone the Repository**
 
 ```bash
-git clone https://github.com/your-username/warehouse-management-system.git
+git clone https://github.com/EvanescenT07/925-backend-ml-wms.git
 cd warehouse-management-system/backend-ml-system
 ```
 
@@ -44,7 +44,7 @@ Choose your backend implementation and install requirements:
 ```bash
 cd .ultralytics
 pip install --upgrade pip
-pip install -r [requirements.txt](http://_vscodecontentref_/0)
+pip install -r requirements.txt
 ```
 
 # ONNX Runtime
@@ -52,7 +52,7 @@ pip install -r [requirements.txt](http://_vscodecontentref_/0)
 ```bash
 cd .onnx
 pip install --upgrade pip
-pip install -r [requirements.txt]
+pip install -r requirements.txt
 ```
 
 # Custom Video Feed
@@ -60,12 +60,12 @@ pip install -r [requirements.txt]
 ```bash
 cd .video*feed
 pip install --upgrade pip
-pip install -r [requirements.txt]
+pip install -r requirements.txt
 ```
 
 ### 3. **Prepare Environment Variables**
 
-Rename the example [.env.example] into [.env] file and adjust as needed
+Rename the example `.env.example` into `.env` file and adjust as needed
 
 ### 4. **Start the FastAPI Server**
 
@@ -74,9 +74,11 @@ Rename the example [.env.example] into [.env] file and adjust as needed
 uvicorn wms_main:app --reload
 ```
 
+```
 - The API endpoint will be available at: **http://localhost:8000/**
 - The Video Stream endpoint: **http://localhost:8000/video**
 - WebSocket detection endpoint: **ws://localhost:8000/ws/detect**
+```
 
 ## 📝 Notes
 

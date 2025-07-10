@@ -52,7 +52,7 @@ pip install -r [requirements.txt](http://_vscodecontentref_/0)
 ```bash
 cd .onnx
 pip install --upgrade pip
-pip install -r [requirements.txt](http://_vscodecontentref_/1)
+pip install -r [requirements.txt]
 ```
 
 # Custom Video Feed
@@ -60,7 +60,7 @@ pip install -r [requirements.txt](http://_vscodecontentref_/1)
 ```bash
 cd .video*feed
 pip install --upgrade pip
-pip install -r [requirements.txt](http://\_vscodecontentref*/2)
+pip install -r [requirements.txt]
 ```
 
 ### 3. **Prepare Environment Variables**

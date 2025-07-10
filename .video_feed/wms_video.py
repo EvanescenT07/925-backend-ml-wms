@@ -19,8 +19,8 @@ class VideoFrame:
         if not ret:
             self.video.set(cv2.CAP_PROP_POS_FRAMES, 0)
             ret, frame = self.video.read()
-            if not ret:
-                return None
+        if not ret:
+            return None
         self.frame_count += 1
         return frame
     

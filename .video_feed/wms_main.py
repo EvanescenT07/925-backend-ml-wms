@@ -1,4 +1,4 @@
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, HTTPException
 from fastapi.responses import StreamingResponse
 from wms_model import detection_object_data
 from wms_video import VideoFrame
@@ -38,8 +38,15 @@ async def root():
 @app.get("/video")
 async def video_feed():
     logging.info("Video feed endpoint accessed")
-    video_stream = VideoFrame(video)
-    
+    try:
+        video_stream = VideoFrame(video)
+    except FileNotFoundError as e:
+        logging.error(f"Video file not found: {e}")
+        raise HTTPException(status_code=404, detail="Video file not found")
+    except Exception as e:
+        logging.error(f"Error initializing video stream: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
+
     return StreamingResponse(
         video_stream.generate_video(),
         media_type="multipart/x-mixed-replace; boundary=frame",

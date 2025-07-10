@@ -81,11 +81,11 @@ jobs:
 
       - name: Install dependencies
         run: |
-          cd .video_stream
+          cd .video_feed
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run tests
         run: |
-          cd .video_stream
+          cd .video_feed
           pytest

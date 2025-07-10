@@ -6,8 +6,8 @@
 .onnx/.pytest_cache/
 .ultralytics/.env
 .ultralytics/.pytest_cache/
-.video-frame/.env
-.video-frame/.pytest_cache/
+.video_feed/.env
+.video_feed/.pytest_cache/
 wms.log
 venv/
 __pycache__/

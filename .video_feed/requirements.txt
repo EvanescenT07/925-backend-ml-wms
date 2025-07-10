@@ -1,0 +1,7 @@
+pytest
+httpx
+fastapi
+uvicorn
+python-dotenv
+opencv-python-headless
+ultralytics

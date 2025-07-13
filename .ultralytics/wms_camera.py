@@ -1,44 +1,66 @@
 import cv2
 import os
 import time
+import threading
 import logging
 
-# This file is part of the WMS Camera module.
-# It handles camera initialization, frame capture, and error management.
 class Camera:
-    # Initialize the camera
+    # A class to handle RTSP camera connections and frame retrieval.
     def __init__(self):
-        self.reload_camera()
-    
-    # Reload the camera if it is not opened or has failed
+        self.frame = None
+        self.running = True
+        self.lock = threading.Lock()
+        cam_url = os.getenv("CAMERA_URL_1")
+        self.cap = cv2.VideoCapture(cam_url)
+        self.error_count = 0
+        if not self.cap.isOpened():
+            logging.error(f"Failed to open camera at {cam_url}")
+            raise RuntimeError(f"Camera at {cam_url} could not be opened.")
+        self.thread = threading.Thread(target=self.update, daemon=True)
+        self.thread.start()
+
+    def update(self):
+        while self.running:
+            ret, frame = self.cap.read()
+            if ret:
+                with self.lock:
+                    self.frame = frame
+                self.error_count = 0
+            else:
+                self.error_count += 1
+                if self.error_count >= 10:
+                    logging.warning("Camera freeze detected, attempting to reload camera...")
+                    self.reload_camera()
+                    time.sleep(2)
+            time.sleep(0.01)
+
     def reload_camera(self):
-        if hasattr(self, 'video') and self.video.isOpened():
-            self.video.release()
         cam_1 = os.getenv("CAMERA_URL_1")
         cam_2 = os.getenv("CAMERA_URL_2")
-        self.video = cv2.VideoCapture(cam_1)
-        if not self.video.isOpened() and cam_2:
-            self.video = cv2.VideoCapture(cam_2)
-        if not self.video.isOpened() and cam_1 and cam_2:
-            logging.error("Both cameras failed to open.")
-        if not self.video.isOpened():
-            raise ValueError("Camera not found")
+        logging.info(f"Attempting to open RTSP camera: {cam_1}")
+        self.cap.release()
+        self.cap = cv2.VideoCapture(cam_1)
+        if not self.cap.isOpened() and cam_2:
+            logging.warning(f"Failed to open {cam_1}, trying backup: {cam_2}")
+            self.cap = cv2.VideoCapture(cam_2)
+        if not self.cap.isOpened():
+            logging.error("Both RTSP cameras failed to open.")
+            raise RuntimeError("Camera not found")
         self.error_count = 0
-    
-    # Release the camera when the object is deleted
-    def __del__(self):
-        if self.video.isOpened():
-            self.video.release()
-    
-    # Get a frame from the camera
+        logging.info("RTSP camera opened successfully.")
+
     def get_frame(self):
-        ret, frame = self.video.read()
-        if not ret:
-            self.error_count += 1
-            if self.error_count >= 10:
-                logging.warning("Camera freeze detected, reloading camera...")
-                self.reload_camera()
-                time.sleep(5)  # Wait for the camera to stabilize (adjustable)
-            return None
-        self.error_count = 0
-        return frame
+        with self.lock:
+            return self.frame.copy() if self.frame is not None else None
+
+    def stop(self):
+        self.running = False
+        if hasattr(self, "thread"):
+            self.thread.join()
+        self.cap.release()
+
+    def __del__(self):
+        try:
+            self.stop()
+        except Exception:
+            pass

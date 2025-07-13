@@ -55,7 +55,6 @@ def detection_object_data(frame):
             detections.append({
                 "class": class_name,
                 "confidence": conf,
-                "box": [x1, y1, x2, y2]
             })
             count += 1
             logging.debug(f"Detected {class_name} at ({x1}, {y1}, {x2}, {y2}) with confidence {conf:.2f}")

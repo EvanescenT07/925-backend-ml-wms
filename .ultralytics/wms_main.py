@@ -23,6 +23,8 @@ app = FastAPI(
 
 LoggingConfig()
 
+camera_buffer = Camera()
+
 # API root endpoint
 @app.get("/")
 def root():
@@ -35,7 +37,7 @@ def root():
 # API endpoint to stream video frames
 @app.get("/video")
 async def video_stream():
-    stream = GenerateVideo()
+    stream = GenerateVideo(camera=camera_buffer)
     return StreamingResponse(
         stream.generate_video(),
         media_type="multipart/x-mixed-replace; boundary=frame",
@@ -45,17 +47,17 @@ async def video_stream():
 @app.websocket("/ws/detect")
 async def websocket_detection(websocket: WebSocket):
     await websocket.accept()
-    cam = Camera()
     try:
         while True:
-            frame = cam.get_frame()
+            frame = camera_buffer.get_frame()
             if frame is None:
-                await asyncio.sleep(1.8)
+                await asyncio.sleep(0.1)
                 continue
             frame = cv2.flip(frame, 1)
+            frame = cv2.resize(frame, (640, 480))
             data = detection_object_data(frame=frame)
             await websocket.send_json(data=data)
-            await asyncio.sleep(3)  # Adjust the sleep time as needed
+            await asyncio.sleep(0.05)  # Adjust the sleep time as needed
     except WebSocketException:
         logging.info("WebSocket client disconnected")
     finally:

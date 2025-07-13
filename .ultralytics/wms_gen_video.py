@@ -1,10 +1,9 @@
 import cv2
-from wms_camera import Camera
 from wms_model import detection_object   
 
 class GenerateVideo:
-    def __init__(self):
-        self.cam = Camera()
+    def __init__(self, camera):
+        self.cam = camera
 
     def generate_video(self):
         try:

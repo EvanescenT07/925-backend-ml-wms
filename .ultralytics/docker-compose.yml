@@ -4,10 +4,10 @@ services:
   wms-ml-ultralytics:
     build: .
     container_name: wms-ml-ultralytics
+    env_file:
+      - .env
     environment:
-      - MODEL_PATH=${MODEL_PATH}
-      - CAMERA_URL_1=${CAMERA_URL_1}
-      - CAMERA_URL_2=${CAMERA_URL_2}
+      - YOLO_CONFIG_DIR=/tmp/Ultralytics
     volumes:
       - .:/app
     ports:

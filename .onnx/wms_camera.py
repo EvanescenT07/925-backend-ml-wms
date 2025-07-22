@@ -2,93 +2,103 @@ import cv2
 import time
 import os
 import logging
+import threading
+from collections import deque
 
-# This file is part of the WMS Camera module.
-# It handles camera initialization, frame capture, and error management.
+# Camera class instance to handle RTSP camera connections and frame retrieval.
 class Camera:
     def __init__(self):
+        self.running = True
+        self.lock = threading.Lock()
+        self.frame_buffer = deque(maxlen=10)  # Buffer to store frames
+        self.consecutive_errors = 0
+        self.error_count = 0
         self.reload_camera()
       
-    # Reloads the camera based on environment variables.
-    # It checks for CAMERA_URL_1 and CAMERA_URL_2, and initializes the camera  
-    def reload_camera(self):
-        if hasattr(self, 'video') and self.video.isOpened():
-            self.video.release()
-        
-        cam_1 = os.getenv("CAMERA_URL_1")
-        cam_2 = os.getenv("CAMERA_URL_2")
-        
-       # Try camera 1
-        if cam_1:
-            logging.info(f"Attempting to connect to camera 1: {cam_1}")
-            try:
-                self.video = cv2.VideoCapture(cam_1)
-                if cam_1.startswith('http'):
-                    self.video.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-                    self.video.set(cv2.CAP_PROP_FPS, 15)  # Reduced FPS
-                    
-                # Test if camera actually works by reading a frame
-                ret, frame = self.video.read()
-                if ret and frame is not None:
-                    logging.info("Successfully connected to camera 1")
-                    self.error_count = 0
-                    return
-                else:
-                    logging.warning("Failed to read frame from camera 1")
-                    self.video.release()
-            except Exception as e:
-                logging.error(f"Error connecting to camera 1: {e}")
-                if self.video:
-                    self.video.release()
-        
-        # Try camera 2 if camera 1 failed
-        if cam_2:
-            logging.info(f"Attempting to connect to camera 2: {cam_2}")
-            try:
-                self.video = cv2.VideoCapture(cam_2)
-                if cam_2.startswith('http'):
-                    self.video.set(cv2.CAP_PROP_BUFFERSIZE, 1)
-                    self.video.set(cv2.CAP_PROP_FPS, 15)  # Reduced FPS
-                    
-                # Test if camera actually works by reading a frame
-                ret, frame = self.video.read()
-                if ret and frame is not None:
-                    logging.info("Successfully connected to camera 2")
-                    self.error_count = 0
-                    return
-                else:
-                    logging.warning("Failed to read frame from camera 2")
-                    self.video.release()
-            except Exception as e:
-                logging.error(f"Error connecting to camera 2: {e}")
-                if self.video:
-                    self.video.release()
-        
-        # If both cameras failed, create a dummy camera instead of raising exception
-        if cam_1 and cam_2:
-            logging.error("Both cameras failed to open. Creating dummy camera.")
-        elif not cam_1 and not cam_2:
-            logging.error("No camera URLs configured in environment variables. Creating dummy camera.")
-        
-        
-        self.error_count = 0
-        
-    # Destructor to release the camera when the object is deleted.
-    # This ensures that the camera resource is properly released.
-    def __del__(self):
-        if self.video.isOpened():
-            self.video.release()
+        self.thread = threading.Thread(target=self.update_frame, daemon=True)
+        self.thread.start()
 
-    # Captures a frame from the camera.
-    # If the camera fails to capture a frame, it increments an error count.
+    def reload_camera(self):
+        if hasattr(self, 'video') and self.video is not None and self.video.isOpened():
+            self.video.release()
+        
+        camera_sources = [
+            os.getenv("CAMERA_URL_1"),
+            os.getenv("CAMERA_URL_2")
+        ]
+        
+        for source in camera_sources:
+            if source and self.connect_camera(source):
+                logging.info(f"✅ Camera connected: {source}")
+                self.consecutive_errors = 0
+                return True
+            
+        logging.error("All camera connections failed!")
+        self.video = None # type: ignore
+        return False
+
+    def connect_camera(self, camera_url):
+        try:
+            self.video = cv2.VideoCapture(camera_url)
+            
+            if isinstance(camera_url, str) and camera_url.startswith("rtsp://"):
+                self.video.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+                self.video.set(cv2.CAP_PROP_FPS, 30)
+                self.video.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+                self.video.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+                
+            ret, frame = self.video.read()
+            if ret and frame is not None:
+                logging.info(f"Camera connected: {camera_url}")
+                return True
+            else:
+                logging.warning(f"Failed to read frame from camera: {camera_url}")
+                if self.video:
+                    self.video.release()
+                self.video = None
+                return False
+            
+        except Exception as e:
+            logging.error(f"Error connecting to camera {camera_url}: {e}")
+            if hasattr(self, 'video') and self.video is not None and self.video.isOpened():
+                self.video.release()
+            self.video = None
+            return False
+                
+    def update_frame(self):
+        while self.running:
+            if hasattr(self, 'video') and self.video is not None and self.video.isOpened():
+                ret, frame = self.video.read()
+                if ret and frame is not None:
+                    with self.lock:
+                        self.frame_buffer.append(frame)
+                    self.consecutive_failures = 0
+                else:
+                    self.consecutive_failures += 1
+                    if self.consecutive_failures >= 10:
+                        logging.warning("Camera connection lost, reloading...")
+                        if not self.reload_camera():
+                            logging.error("Camera reload failed, waiting...")
+                            time.sleep(3)
+                        self.consecutive_failures = 0
+            else:
+                time.sleep(0.1)
+                
+            time.sleep(0.01)
+
     def get_frame(self):
-        ret, frame = self.video.read()
-        if not ret:
-            self.error_count += 1
-            if self.error_count >= 10:
-                logging.warning("Camera freeze detected, reloading camera...")
-                self.reload_camera()
-                time.sleep(2)  # time reload
+        with self.lock:
+            if self.frame_buffer:
+                return self.frame_buffer[-1].copy()  # Return latest frame
             return None
-        self.error_count = 0
-        return frame
+    
+    def stop(self):
+        self.running = False
+        if hasattr(self, 'thread'):
+            self.thread.join(timeout=1)
+        if hasattr(self, 'video') and self.video is not None and self.video.isOpened():
+            self.video.release()
+            
+    def __del__(self):
+        self.stop()
+        logging.info("Camera resources released.")

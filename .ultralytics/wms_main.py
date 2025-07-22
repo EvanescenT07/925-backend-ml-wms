@@ -8,6 +8,9 @@ import cv2
 import asyncio
 import logging
 
+from fastapi import FastAPI, WebSocket, WebSocketException
+from fastapi.responses import StreamingResponse
+
 # App metadata
 title = "Warehouse Management System"
 description = "PT. Akebono Brake Astra Indonesia Warehouse Management System"
@@ -18,7 +21,6 @@ app = FastAPI(
     title=title,
     description=description,
     version=version,
-    debug=True,
 )
 
 LoggingConfig()
@@ -63,7 +65,6 @@ async def websocket_detection(websocket: WebSocket):
     finally:
         await websocket.close()
         logging.info("WebSocket connection closed")
-        del cam  # Clean up camera resources
 
 # Run the application with: uvicorn wms_main:app --host 0.0.0.0 --port 8000
 # Note: Ensure that the necessary imports and configurations are in place for the Camera and detection_object_data functions.

@@ -8,7 +8,10 @@ load_dotenv()
 
 # Set up Threshold for detection confidence and load the YOLO model
 THRESHOLD = 0.83
-model = YOLO(os.getenv("MODEL_PATH"))
+model_path = os.getenv("MODEL_PATH")
+if model_path is None:
+    raise ValueError("MODEL_PATH environment variable is not set. Please set it before running the script.")
+model = YOLO(model_path)
 
 if not model:
     logging.error("Model not loaded. Please check the MODEL_PATH environment variable.")

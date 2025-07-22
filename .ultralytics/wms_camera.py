@@ -11,6 +11,9 @@ class Camera:
         self.running = True
         self.lock = threading.Lock()
         cam_url = os.getenv("CAMERA_URL_1")
+        if not cam_url:
+            logging.error("Environment variable CAMERA_URL_1 is not set.")
+            raise RuntimeError("CAMERA_URL_1 environment variable is not set.")
         self.cap = cv2.VideoCapture(cam_url)
         self.error_count = 0
         if not self.cap.isOpened():
@@ -39,10 +42,13 @@ class Camera:
         cam_2 = os.getenv("CAMERA_URL_2")
         logging.info(f"Attempting to open RTSP camera: {cam_1}")
         self.cap.release()
-        self.cap = cv2.VideoCapture(cam_1)
-        if not self.cap.isOpened() and cam_2:
+        if cam_1 is not None:
+            self.cap = cv2.VideoCapture(str(cam_1))
+        else:
+            self.cap = cv2.VideoCapture()
+        if not self.cap.isOpened() and cam_2 is not None:
             logging.warning(f"Failed to open {cam_1}, trying backup: {cam_2}")
-            self.cap = cv2.VideoCapture(cam_2)
+            self.cap = cv2.VideoCapture(str(cam_2))
         if not self.cap.isOpened():
             logging.error("Both RTSP cameras failed to open.")
             raise RuntimeError("Camera not found")

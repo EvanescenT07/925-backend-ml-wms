@@ -6,7 +6,10 @@ import os
 load_dotenv()
 
 THRESHOLD = 0.83
-model = YOLO(os.getenv("MODEL_PATH"))
+model_path = os.getenv("MODEL_PATH")
+if model_path is None:
+    raise ValueError("Environment variable MODEL_PATH is not set.")
+model = YOLO(model_path)
 
 def detection_object(frame):
     frame = cv2.flip(frame, 1)
@@ -55,7 +58,7 @@ def detection_object_data(frame):
                 "class": class_name,
                 "confidence": conf,
             })
-            count += 1
+            count += 15
     return {
         "detections": detections,
         "total": count

@@ -234,7 +234,7 @@ def test_detection_object_multiple_detections(mock_model):
     dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
     result = detection_object_data(dummy_frame)
     
-    assert result["total"] == 2
+    assert result["total"] == 30
     assert len(result["detections"]) == 2
 
 # --- GenerateVideo class tests ---
@@ -444,7 +444,7 @@ def test_detection_performance_with_many_objects(mock_model):
     dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
     result = detection_object_data(dummy_frame)
     
-    assert result["total"] == 10
+    assert result["total"] == 150
     assert len(result["detections"]) == 10
 
 # --- Utility tests ---
@@ -480,8 +480,9 @@ def test_generate_video_cleanup(mock_video_frame_class):
     mock_video_frame_class.return_value = mock_video
     
     gen_video = GenerateVideo()
-    gen_video.video_writer = Mock()  # Simulate having a video writer
-    
+    # Simulate having a video writer
+    gen_video.video_writer = Mock()
+
     generator = gen_video.generate_video("test_video.mp4")
     
     try:

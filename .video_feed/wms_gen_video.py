@@ -4,6 +4,8 @@ import cv2
 import logging
 
 class GenerateVideo:
+    video_writer: cv2.VideoWriter | None
+
     def __init__(self):
         self.video_writer = None
         self.frame_width = 640

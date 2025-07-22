@@ -1,5 +1,6 @@
 from fastapi import FastAPI, WebSocket, HTTPException
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from wms_model import detection_object_data
 from wms_video import VideoFrame
 from wms_logging import LoggingConfig
@@ -19,7 +20,15 @@ app = FastAPI(
     title=title,
     description=description,
     version=version,
-    debug=True,
+    
+)
+
+app.add_middleware(
+    CORSMiddleware, 
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 LoggingConfig()
@@ -69,3 +78,5 @@ async def websocket_detect(websocket: WebSocket):
     finally:
         del video_stream
         await websocket.close()
+        
+# Run the application uvicorn wms

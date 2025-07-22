@@ -2,9 +2,10 @@ from wms_video import VideoFrame
 from wms_model import detection_object
 import cv2
 import logging
+from typing import Optional
 
 class GenerateVideo:
-    video_writer: cv2.VideoWriter | None
+    video_writer: Optional[cv2.VideoWriter] = None  # Type hint for video writer
 
     def __init__(self):
         self.video_writer = None

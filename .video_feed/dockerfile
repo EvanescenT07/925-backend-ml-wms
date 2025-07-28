@@ -32,7 +32,7 @@ RUN apt-get update && \
 COPY --from=builder /root/.local /root/.local
 
 # Copy application code
-COPY wms_main.py wms_gen_video.py wms_camera.py wms_model.py wms_logging.py ./
+COPY wms_main.py wms_gen_video.py wms_video.py wms_model.py wms_logging.py ./
 COPY model/model.pt ./model/
 COPY vid/warehouse.mp4 ./vid/
 

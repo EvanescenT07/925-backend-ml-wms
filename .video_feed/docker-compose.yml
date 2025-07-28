@@ -1,0 +1,13 @@
+version: "3.8"
+services:
+  wms-ml-video-feed:
+  build: .
+  container_name: wms-ml-video-feed
+  ports:
+    - "8000:8000"
+  environment:
+    - MODEL_PATH=${MODEL_PATH}
+    - VIDEO_PATH=${VIDEO_PATH}
+  volumes:
+    - .:/app
+  restart: unless-stopped

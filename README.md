@@ -120,7 +120,7 @@ backend-ml-system/
 │   ├── docker-compose.yml
 │   ├── .env
 │   ├── .env.example
-│   └── model/            # Place YOLOv8 model here
+│   └── model/            # Place YOLOv11 model here
 │
 ├── .video_feed/          # Custom video feed backend
 │   ├── wms_main.py

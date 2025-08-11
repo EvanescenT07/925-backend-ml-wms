@@ -1,5 +1,6 @@
 from fastapi import FastAPI, WebSocket, WebSocketException
 from fastapi.responses import StreamingResponse
+from contextlib import asynccontextmanager
 from wms_model import detection_object_data
 from wms_gen_video import GenerateVideo
 from wms_camera import Camera 
@@ -8,8 +9,17 @@ import cv2
 import asyncio
 import logging
 
-from fastapi import FastAPI, WebSocket, WebSocketException
-from fastapi.responses import StreamingResponse
+resources = {}
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logging.info("Starting up...")
+    resources["camera"] = Camera()
+    yield
+    logging.info("Shutting down...")
+    if "camera" in resources and resources["camera"]:
+        resources["camera"].stop()
+    resources.clear()
 
 # App metadata
 title = "Warehouse Management System"
@@ -21,6 +31,7 @@ app = FastAPI(
     title=title,
     description=description,
     version=version,
+    lifespan=lifespan,
 )
 
 LoggingConfig()

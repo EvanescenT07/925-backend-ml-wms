@@ -8,9 +8,9 @@ from wms_logging import LoggingConfig
 from contextlib import asynccontextmanager
 import cv2
 import asyncio
-import json
 import time
 import logging
+
 
 LoggingConfig()
 
@@ -66,6 +66,8 @@ app = FastAPI(
     version=version,
     lifespan=lifespan
 )
+
+
 
 # CORS middleware configuration
 app.add_middleware(

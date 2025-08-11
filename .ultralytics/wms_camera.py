@@ -3,13 +3,14 @@ import os
 import time
 import threading
 import logging
-
+from collections import deque
 class Camera:
     # A class to handle RTSP camera connections and frame retrieval.
     def __init__(self):
         self.frame = None
         self.running = True
         self.lock = threading.Lock()
+        self.frame_buffer = deque(maxlen=10)
         cam_url = os.getenv("CAMERA_URL_1")
         if not cam_url:
             logging.error("Environment variable CAMERA_URL_1 is not set.")
@@ -28,6 +29,7 @@ class Camera:
             if ret:
                 with self.lock:
                     self.frame = frame
+                    self.frame_buffer.append(frame)
                 self.error_count = 0
             else:
                 self.error_count += 1
@@ -57,7 +59,9 @@ class Camera:
 
     def get_frame(self):
         with self.lock:
-            return self.frame.copy() if self.frame is not None else None
+            if self.frame_buffer:
+                return self.frame_buffer[-1].copy()
+            return None
 
     def stop(self):
         self.running = False

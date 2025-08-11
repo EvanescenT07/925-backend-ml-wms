@@ -12,7 +12,10 @@ class GenerateVideo:
                 if frame is None:
                     continue
                 frame = cv2.flip(frame, 1)
-                annotated_frame, _ = detection_object(frame=frame)
+                result = detection_object(frame=frame)
+                if result is None:
+                    continue
+                annotated_frame, _ = result
                 _, jpeg = cv2.imencode('.jpg', annotated_frame) 
                 frame_bytes = jpeg.tobytes()
                 yield (b'--frame\r\n'

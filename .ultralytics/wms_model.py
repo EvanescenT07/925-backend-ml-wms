@@ -7,7 +7,7 @@ import logging
 load_dotenv()
 
 # Set up Threshold for detection confidence and load the YOLO model
-THRESHOLD = 0.83
+THRESHOLD = 0.75
 model_path = os.getenv("MODEL_PATH")
 if model_path is None:
     raise ValueError("MODEL_PATH environment variable is not set. Please set it before running the script.")
@@ -35,8 +35,8 @@ def detection_object(frame):
             label = f"{class_name} {conf:.2f}"
             cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
             cv2.putText(annotated_frame, label, (x1, y1 - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-            count += 1
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            count += 3
             
     cv2.putText(annotated_frame, f"Total: {count}", (20, 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
@@ -59,7 +59,7 @@ def detection_object_data(frame):
                 "class": class_name,
                 "confidence": conf,
             })
-            count += 1
+            count += 3
             logging.debug(f"Detected {class_name} at ({x1}, {y1}, {x2}, {y2}) with confidence {conf:.2f}")
     return {
         "total": count,

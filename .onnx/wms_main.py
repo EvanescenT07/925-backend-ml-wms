@@ -126,7 +126,7 @@ async def websocket_detection(websocket: WebSocket):
     
     try:
         last_detection_time = 0
-        target_fps = 24
+        target_fps = 40
         detection_interval = 1.0 / target_fps
         
         await websocket.send_json({

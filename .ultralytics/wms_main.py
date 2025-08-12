@@ -1,5 +1,6 @@
 from fastapi import FastAPI, WebSocket, WebSocketException
 from fastapi.responses import StreamingResponse
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from wms_model import detection_object_data
 from wms_gen_video import GenerateVideo
@@ -32,6 +33,14 @@ app = FastAPI(
     description=description,
     version=version,
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 LoggingConfig()

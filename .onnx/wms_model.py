@@ -10,8 +10,8 @@ import logging
 
 load_dotenv()
 
-THRESHOLD = 0.83
-NMS_IOU_THRESHOLD = 0.5
+THRESHOLD = 0.65
+NMS_IOU_THRESHOLD = 0.6
 MODEL_PATH = os.getenv("MODEL_PATH")
 if MODEL_PATH is None:
     raise ValueError("Environment variable 'MODEL_PATH' is not set.")
@@ -290,6 +290,7 @@ def detection_object_data(frame):
         
         # postprocess the outputs
         detections = postprocess(outputs=outputs, orig_shape=frame.shape)
+        logging.info(f"ONNX inference: {len(detections)} detections, frame shape: {frame.shape}")
         
         # Prepare the result
         result = []
@@ -314,7 +315,7 @@ def detection_object_data(frame):
             logging.debug(f"Inference time: {inference_time:.4f}s, detections: {len(result)}")
                         
         return {
-            "total": len(result),
+            "total": len(result) * 3,
             "detections": result
         }
         
@@ -331,6 +332,7 @@ def detection_object(frame):
         detections = postprocess(
             session.run(None, {input_name: preprocess(frame)}), orig_shape=frame.shape
         )
+        logging.info(f"ONNX inference: {len(detections)} detections, frame shape: {frame.shape}")
         annotated_frame = frame.copy()
         
         # Draw bounding boxes and labels on the frame
@@ -342,13 +344,13 @@ def detection_object(frame):
             class_name = CLASS_NAMES[class_id] if len(CLASS_NAMES) > 0 else "object"
             label = f"{class_name} {conf:.2f}"
             
-            cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
-            cv2.putText(annotated_frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 0, 255), 2)
+            cv2.putText(annotated_frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
             
         # Total number of detections
-        cv2.putText(annotated_frame, f"Total: {len(detections)}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+        cv2.putText(annotated_frame, f"Total: {len(detections)}", (20, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
         
-        return annotated_frame, len(detections)
+        return annotated_frame, len(detections)*3
         
     except Exception as e:
         logging.error(f"Error in detection_object: {e}")

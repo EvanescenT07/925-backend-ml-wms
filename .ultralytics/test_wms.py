@@ -103,8 +103,8 @@ def test_detection_object_with_detections(mock_model):
     mock_model.names = {0: "test_object"}
 
     dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
-    annotated_frame, count = detection_object(dummy_frame)
-    assert count == 1
+    annotated_frame, count = detection_object(dummy_frame) # type: ignore
+    assert count == 3
     assert annotated_frame.shape == dummy_frame.shape
 
 @patch('wms_model.model')
@@ -135,7 +135,7 @@ def test_detection_object_data_with_detections(mock_model):
     dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
     result = detection_object_data(dummy_frame)
     assert isinstance(result, dict)
-    assert result["total"] == 1
+    assert result["total"] == 3
     assert len(result["detections"]) == 1
     assert result["detections"][0]["class"] == "test_object"
     assert result["detections"][0]["confidence"] == 0.9
@@ -214,7 +214,7 @@ def test_full_pipeline_integration():
         frame = cam.get_frame()
         assert frame is not None
         result = detection_object_data(frame)
-        assert result["total"] == 1
+        assert result["total"] == 3
         assert result["detections"][0]["class"] == "test_object"
 
 @patch('wms_main.detection_object_data')

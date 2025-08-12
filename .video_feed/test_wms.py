@@ -234,7 +234,7 @@ def test_detection_object_multiple_detections(mock_model):
     dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
     result = detection_object_data(dummy_frame)
     
-    assert result["total"] == 30
+    assert result["total"] == 6
     assert len(result["detections"]) == 2
 
 # --- GenerateVideo class tests ---
@@ -444,7 +444,7 @@ def test_detection_performance_with_many_objects(mock_model):
     dummy_frame = np.zeros((480, 640, 3), dtype=np.uint8)
     result = detection_object_data(dummy_frame)
     
-    assert result["total"] == 150
+    assert result["total"] == 30
     assert len(result["detections"]) == 10
 
 # --- Utility tests ---

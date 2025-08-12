@@ -26,8 +26,8 @@ def detection_object(frame):
             label = f"{class_name} {conf:.2f}"
             cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
             cv2.putText(annotated_frame, label, (x1, y1 - 10),
-                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
-            count += 1
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
+            count += 3
             
     h, _ = annotated_frame.shape[:2]
     text = f"Total: {count}"
@@ -58,7 +58,7 @@ def detection_object_data(frame):
                 "class": class_name,
                 "confidence": conf,
             })
-            count += 15
+            count += 3
     return {
         "detections": detections,
         "total": count

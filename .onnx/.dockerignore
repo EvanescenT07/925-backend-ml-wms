@@ -6,6 +6,7 @@ ____pycache__/
 *.db
 *.sqlite3
 .env
+.env.example
 venv/
 .idea/
 *.log

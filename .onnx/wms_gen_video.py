@@ -28,7 +28,7 @@ class GenerateVideo:
                 
                 # Optimized JPEG encoding for faster processing
                 encode_params = [
-                    cv2.IMWRITE_JPEG_QUALITY, 80,
+                    cv2.IMWRITE_JPEG_QUALITY, 100,
                     cv2.IMWRITE_JPEG_OPTIMIZE, 1
                 ]
                 
